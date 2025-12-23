@@ -574,8 +574,7 @@
         ctx.globalAlpha = 1; // сбросить альфу
 
         // player
-        ctx.fillStyle = "#7ff";
-        drawShip(player.x, player.y, player.w, player.h);
+        drawPlayerShip(ctx, player.x, player.y, dt);
 
         // player bullets
         ctx.fillStyle = "#ff8";
@@ -613,15 +612,58 @@
         }
       }
 
-      function drawShip(x, y, w, h) {
+      function drawPlayerShip(ctx, x, y, time) {
+        const w = 40;
+        const h = 18;
+
+        ctx.save();
+
+        // Glow effect
+        ctx.shadowColor = "#a0f";
+        ctx.shadowBlur = 15;
+
+        // Main body (trapezoid)
+        ctx.fillStyle = "#a0f";
         ctx.beginPath();
-        ctx.moveTo(x, y + h);
-        ctx.lineTo(x + w * 0.2, y + h);
-        ctx.lineTo(x + w * 0.5, y);
+        ctx.moveTo(x + w * 0.2, y + h);
+        ctx.lineTo(x + w * 0.4, y + h * 0.5);
+        ctx.lineTo(x + w * 0.6, y + h * 0.5);
         ctx.lineTo(x + w * 0.8, y + h);
-        ctx.lineTo(x + w, y + h);
         ctx.closePath();
         ctx.fill();
+
+        // Cockpit (small arc on top)
+        ctx.beginPath();
+        ctx.arc(x + w * 0.5, y + h * 0.3, w * 0.15, 0, Math.PI);
+        ctx.fill();
+
+        // Wings (side triangles)
+        ctx.beginPath();
+        ctx.moveTo(x + w * 0.3, y + h * 0.6);
+        ctx.lineTo(x + w * 0.1, y + h * 0.8);
+        ctx.lineTo(x + w * 0.4, y + h * 0.8);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(x + w * 0.7, y + h * 0.6);
+        ctx.lineTo(x + w * 0.9, y + h * 0.8);
+        ctx.lineTo(x + w * 0.6, y + h * 0.8);
+        ctx.closePath();
+        ctx.fill();
+
+        // Animated engine flame
+        const flameLength = 5 + Math.sin(time * 20) * 3;
+        ctx.fillStyle = "#ff0";
+        ctx.shadowColor = "#ff0";
+        ctx.beginPath();
+        ctx.moveTo(x + w * 0.4, y + h);
+        ctx.lineTo(x + w * 0.5, y + h + flameLength);
+        ctx.lineTo(x + w * 0.6, y + h);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
       }
 
       function gameLoop(ts) {
