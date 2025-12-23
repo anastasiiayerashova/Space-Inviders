@@ -310,6 +310,7 @@
         aliens.y = 60;
         aliens.dir = 1;
         aliens.spd = 30;
+        aliens.horizontalSpeed = 20;
         aliens.shootTimer = 1.5;
         for (let r = 0; r < aliens.rows; r++) {
           for (let c = 0; c < aliens.cols; c++) {
@@ -451,12 +452,17 @@
               maxX = Math.max(maxX, a.x + aliens.w);
             }
           });
-          const willHitLeft = minX + aliens.dir * 20 < 10;
-          const willHitRight = maxX + aliens.dir * 20 > baseW - 10;
+          const willHitLeft = minX + aliens.dir * aliens.horizontalSpeed < 10;
+          const willHitRight =
+            maxX + aliens.dir * aliens.horizontalSpeed > baseW - 10;
           if (willHitLeft || willHitRight) {
             aliens.dir *= -1;
             aliens.arr.forEach((a) => (a.y += aliens.drop));
-          } else aliens.arr.forEach((a) => (a.x += aliens.dir * 20));
+            aliens.horizontalSpeed *= 1.05; // Incremental speed increase
+          } else
+            aliens.arr.forEach(
+              (a) => (a.x += aliens.dir * aliens.horizontalSpeed)
+            );
           aliens.lastMove = 0;
         }
 
