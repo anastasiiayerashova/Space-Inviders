@@ -3,6 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
     <title>Space Invaders</title>
     <style>
       :root {
@@ -16,7 +22,7 @@
         margin: 0;
         background: radial-gradient(circle at 20% 10%, #001020 0%, #000 40%);
         color: var(--fg);
-        font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial;
+        font-family: "Press Start 2P", cursive;
       }
       #gameWrap {
         position: fixed;
@@ -551,7 +557,7 @@
 
       function gameOver() {
         state = "gameover";
-        centerEl.innerHTML = `<div style="font-size:36px;font-weight:700">GAME OVER</div><div class="small">Score: ${score} — High: ${highscore}</div><div class="small">Press Enter to Restart</div>`;
+        centerEl.innerHTML = `<div style="font-size:36px;font-weight:700;margin-bottom:28px;">GAME OVER</div><div class="small" style="margin-bottom:12px;">Score: ${score} — High: ${highscore}</div><div class="small">Press Enter to Restart</div>`;
         if (score > highscore) {
           highscore = score;
           localStorage.setItem("si_highscore", String(highscore));
@@ -612,7 +618,7 @@
           ctx.fillStyle = "rgba(0,0,0,0.7)";
           ctx.fillRect(0, 0, baseW, baseH);
           ctx.fillStyle = "#fff";
-          ctx.font = "48px monospace";
+          ctx.font = "48px 'Press Start 2P', cursive";
           ctx.textAlign = "center";
           ctx.fillText("PAUSED", baseW / 2, baseH / 2);
         }
@@ -684,7 +690,7 @@
 
       // small UI for start
       function showStart() {
-        centerEl.innerHTML = `<div style="font-size:32px;font-weight:700">SPACE INVADERS</div><div class="small">Arrow keys to move, Space to shoot</div><div class="small">Press Enter to Start</div>`;
+        centerEl.innerHTML = `<div style="font-size:32px;font-weight:700;margin-bottom:28px;">SPACE INVADERS</div><div class="small" style="margin-bottom:12px;">Arrow keys to move, Space to shoot</div><div class="small">Press Enter to Start</div>`;
       }
       showStart();
 
