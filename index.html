@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Space Invaders — Single File</title>
+    <title>Space Invaders</title>
     <style>
       :root {
         --bg: #000;
@@ -71,6 +71,7 @@
       }
     </style>
   </head>
+  <link rel="icon" href="favicon.svg" type="image/x-icon" />
   <body>
     <div id="gameWrap">
       <canvas id="game"></canvas>
@@ -182,7 +183,7 @@
       const starSpeedMax = 60; // Максимальная скорость
       const starSizeMin = 1; // Минимальный размер
       const starSizeMax = 3; // Максимальный размер
-      const starColors = ['#fff', '#9ff', '#ccc', '#eee']; // Цвета звёзд
+      const starColors = ["#fff", "#9ff", "#ccc", "#eee"]; // Цвета звёзд
       function initStars() {
         stars.length = 0;
         for (let i = 0; i < starCount; i++) {
@@ -200,7 +201,7 @@
       initStars();
       // Explosions for aliens
       const explosions = [];
-      const explosionColors = ['#f00', '#ff0', '#fff', '#f80']; // Красный, желтый, белый, оранжевый
+      const explosionColors = ["#f00", "#ff0", "#fff", "#f80"]; // Красный, желтый, белый, оранжевый
       function createExplosion(x, y) {
         const particleCount = 5 + Math.floor(Math.random() * 6); // 5-10 частиц
         const particles = [];
@@ -214,7 +215,10 @@
             vy: Math.sin(angle) * speed,
             size: 2 + Math.random() * 3, // 2-5 пикс
             lifetime: 0.2 + Math.random() * 0.3, // 0.2-0.5 сек
-            color: explosionColors[Math.floor(Math.random() * explosionColors.length)],
+            color:
+              explosionColors[
+                Math.floor(Math.random() * explosionColors.length)
+              ],
           });
         }
         explosions.push({ particles, startTime: performance.now() / 1000 });
