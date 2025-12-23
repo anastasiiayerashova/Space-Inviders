@@ -74,7 +74,7 @@
   <link rel="icon" href="favicon.svg" type="image/x-icon" />
   <body>
     <div id="gameWrap">
-      <canvas id="game"></canvas>
+      <canvas id="game" tabindex="0"></canvas>
     </div>
     <div class="hud" id="score">Score: 0</div>
     <div class="rightHud" id="lives">Lives: 3</div>
@@ -101,6 +101,7 @@
       }
       window.addEventListener("resize", resize);
       resize();
+      cvs.focus(); // Focus the canvas for key events
 
       // Game state
       let state = "start"; // 'start','playing','paused','gameover'
@@ -223,6 +224,65 @@
         }
         explosions.push({ particles, startTime: performance.now() / 1000 });
       }
+
+      // Alien class
+      class Alien {
+        constructor(r, c, x, y) {
+          this.r = r;
+          this.c = c;
+          this.x = x;
+          this.y = y;
+          this.hp = 1;
+          this.anim = 0;
+          this.colors = ["#f00", "#f80", "#ff0", "#0f0"]; // Neon colors by row
+          this.color = this.colors[r % this.colors.length];
+        }
+
+        draw(ctx, dt) {
+          this.anim += dt;
+          const w = aliens.w;
+          const h = aliens.h;
+          const centerX = this.x + w / 2;
+          const centerY = this.y + h / 2;
+
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          ctx.rotate(Math.sin(this.anim * 2) * 0.05); // Slight wobble
+          ctx.translate(-w / 2, -h / 2);
+
+          // Glow effect
+          ctx.shadowColor = this.color;
+          ctx.shadowBlur = 15;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+
+          // Hull: ellipse
+          ctx.fillStyle = this.color;
+          ctx.beginPath();
+          ctx.ellipse(w / 2, h * 0.6, w / 2, h * 0.4, 0, 0, 2 * Math.PI);
+          ctx.fill();
+
+          // Dome: arc
+          ctx.beginPath();
+          ctx.arc(w / 2, h * 0.3, w * 0.3, Math.PI, 0);
+          ctx.fill();
+
+          // Lights: blinking circles at bottom
+          const lights = 3;
+          for (let i = 0; i < lights; i++) {
+            const lx = ((i + 1) * w) / (lights + 1);
+            const ly = h * 0.8;
+            ctx.fillStyle =
+              Math.sin(this.anim * 10 + i * 2) > 0 ? "#fff" : this.color;
+            ctx.beginPath();
+            ctx.arc(lx, ly, 3, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+
+          ctx.restore();
+        }
+      }
+
       let keys = {};
       let lastTime = 0;
       let score = 0;
@@ -253,21 +313,21 @@
         aliens.shootTimer = 1.5;
         for (let r = 0; r < aliens.rows; r++) {
           for (let c = 0; c < aliens.cols; c++) {
-            aliens.arr.push({
-              r,
-              c,
-              x: aliens.x + c * (aliens.w + aliens.gap),
-              y: aliens.y + r * (aliens.h + aliens.gap),
-              hp: 1,
-              anim: 0,
-            });
+            aliens.arr.push(
+              new Alien(
+                r,
+                c,
+                aliens.x + c * (aliens.w + aliens.gap),
+                aliens.y + r * (aliens.h + aliens.gap)
+              )
+            );
           }
         }
       }
       initAliens();
 
       // Input
-      window.addEventListener("keydown", (e) => {
+      cvs.addEventListener("keydown", (e) => {
         if (
           ["ArrowLeft", "ArrowRight", " ", "Spacebar", "ArrowUp"].includes(
             e.key
@@ -290,7 +350,7 @@
           Audio.ensure();
         }
       });
-      window.addEventListener("keyup", (e) => {
+      cvs.addEventListener("keyup", (e) => {
         if (state === "playing") keys[e.code || e.key] = false;
       });
 
@@ -500,7 +560,7 @@
       }
 
       // Render
-      function draw() {
+      function draw(dt) {
         // background
         ctx.clearRect(0, 0, baseW, baseH);
         // starfield
@@ -522,12 +582,7 @@
         player.bullets.forEach((b) => ctx.fillRect(b.x, b.y, b.w, b.h));
 
         // aliens
-        aliens.arr.forEach((a) => {
-          ctx.fillStyle = "#f6f";
-          ctx.fillRect(a.x, a.y, aliens.w, aliens.h);
-          ctx.fillStyle = "#800";
-          ctx.fillRect(a.x + 4, a.y + 4, aliens.w - 8, aliens.h - 8);
-        });
+        aliens.arr.forEach((a) => a.draw(ctx, dt));
 
         // alien bullets
         ctx.fillStyle = "#f55";
@@ -574,7 +629,7 @@
         const dt = Math.min(0.05, (ts - lastTime) / 1000);
         lastTime = ts;
         if (state === "playing") update(dt);
-        draw();
+        draw(dt);
         requestAnimationFrame(gameLoop);
       }
       requestAnimationFrame(gameLoop);
